@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Para a minha princesa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Dancing+Script:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --night-1:#140c2e;
+    --night-2:#2a1850;
+    --night-3:#3d2168;
+    --dawn-1:#3a2a5e;
+    --dawn-2:#7a5a8e;
+    --dawn-3:#e6a9a0;
+    --gold:#f3cd86;
+    --gold-soft:#f7e2b8;
+    --cream:#fdf6ee;
+    --leaf:#7fb98a;
+    --leaf-dark:#4f8a63;
+    --card:#fbf4ec;
+    --ink:#3a2c46;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{
+    font-family:'Cormorant Garamond',Georgia,serif;
+    background:var(--night-1);
+    color:var(--cream);
+    overflow:hidden;
+    position:fixed;
+    width:100%;
+    transition:background 2.5s ease;
+    -webkit-font-smoothing:antialiased;
+  }
+  body.dawn{background:linear-gradient(180deg,#5b4a7e 0%,#a87a9a 55%,#f0bfa8 100%);}
+
+  .screen{
+    position:absolute;inset:0;
+    display:flex;flex-direction:column;
+    align-items:center;justify-content:center;
+    padding:28px 22px;
+    opacity:0;pointer-events:none;
+    transition:opacity 1s ease;
+    text-align:center;
+  }
+  .screen.active{opacity:1;pointer-events:auto;}
+
+  /* sky / stars */
+  #sky{position:absolute;inset:0;overflow:hidden;z-index:0;}
+  .star{position:absolute;background:#fff;border-radius:50%;opacity:0;animation:tw 4s infinite ease-in-out;}
+  @keyframes tw{0%,100%{opacity:.15;}50%{opacity:.95;}}
+  body.dawn .star{opacity:0 !important;transition:opacity 2s ease;}
+  .moon{
+    position:absolute;top:9%;right:14%;width:62px;height:62px;border-radius:50%;
+    background:radial-gradient(circle at 36% 34%,#fffdf4,#f3e6c0 70%,#e4cf99);
+    box-shadow:0 0 40px 8px rgba(247,226,184,.4);
+    transition:opacity 2s ease,transform 2s ease;z-index:1;
+  }
+  body.dawn .moon{opacity:0;transform:translateY(-40px);}
+  .sun{
+    position:absolute;top:11%;left:50%;transform:translateX(-50%) scale(.4);
+    width:90px;height:90px;border-radius:50%;
+    background:radial-gradient(circle at 50% 45%,#fff7e0,#ffd98a 60%,#ffb86b);
+    box-shadow:0 0 70px 22px rgba(255,210,130,.55);
+    opacity:0;transition:opacity 2.5s ease,transform 2.5s ease;z-index:1;
+  }
+  body.dawn .sun{opacity:1;transform:translateX(-50%) scale(1);}
+
+  /* ---------- video splash ---------- */
+  #videoSplash{
+    position:fixed;inset:0;z-index:100;
+    background:#000;
+    display:flex;flex-direction:column;
+    align-items:center;justify-content:center;
+    transition:opacity 1.2s ease;
+  }
+  #videoSplash.fade-out{opacity:0;pointer-events:none;}
+  #videoSplash video{
+    position:absolute;inset:0;width:100%;height:100%;
+    object-fit:cover;opacity:0.55;
+  }
+  .splash-text{
+    position:relative;z-index:2;
+    text-align:center;padding:0 28px;
+  }
+  .splash-text p{
+    font-family:'Dancing Script',cursive;
+    font-size:28px;color:#fff;
+    text-shadow:0 2px 18px rgba(0,0,0,.7);
+    line-height:1.45;margin-bottom:28px;
+  }
+  .splash-btn{
+    font-family:'Cormorant Garamond',serif;
+    font-size:21px;font-weight:600;
+    color:var(--night-2);
+    background:linear-gradient(180deg,#fbe6c4,#f3cd86);
+    border:none;border-radius:40px;
+    padding:14px 36px;
+    box-shadow:0 8px 26px rgba(243,205,134,.35);
+    cursor:pointer;
+    animation:pulse 2.6s infinite ease-in-out;
+  }
+
+  /* ---------- intro ---------- */
+  #intro{z-index:5;}
+  .crown{font-size:46px;line-height:1;margin-bottom:6px;filter:drop-shadow(0 4px 10px rgba(0,0,0,.35));}
+  .eyebrow{
+    font-family:'Dancing Script',cursive;
+    font-size:26px;color:var(--gold);letter-spacing:.5px;margin-bottom:2px;
+  }
+  .princess-name{
+    font-size:64px;font-weight:600;line-height:1;
+    color:var(--cream);margin:0 0 26px;
+    text-shadow:0 4px 24px rgba(0,0,0,.4);
+  }
+  .count-wrap{margin:10px 0 30px;}
+  .count-num{
+    font-size:74px;font-weight:600;color:var(--gold);line-height:1;
+    text-shadow:0 0 30px rgba(243,205,134,.4);
+    font-variant-numeric:tabular-nums;
+  }
+  .count-label{
+    font-size:21px;color:var(--cream);opacity:.86;
+    max-width:300px;margin:8px auto 0;line-height:1.35;
+  }
+  .count-sub{font-family:'Dancing Script',cursive;font-size:22px;color:var(--gold-soft);margin-top:4px;opacity:.9;}
+
+  .btn{
+    font-family:'Cormorant Garamond',serif;
+    font-size:23px;font-weight:600;letter-spacing:.4px;
+    color:var(--night-2);
+    background:linear-gradient(180deg,#fbe6c4,#f3cd86);
+    border:none;border-radius:40px;
+    padding:16px 40px;
+    box-shadow:0 8px 26px rgba(243,205,134,.35),inset 0 1px 0 rgba(255,255,255,.6);
+    cursor:pointer;
+    transition:transform .2s ease,box-shadow .2s ease;
+    animation:pulse 2.6s infinite ease-in-out;
+  }
+  .btn:active{transform:scale(.95);}
+  @keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.045);}}
+
+  /* ---------- garden ---------- */
+  #garden{z-index:3;justify-content:flex-start;padding-top:0;}
+  .garden-head{
+    width:100%;padding:18px 8px 6px;
+    position:relative;z-index:4;flex:0 0 auto;
+  }
+  .garden-title{
+    font-family:'Dancing Script',cursive;font-size:27px;color:var(--gold-soft);
+    text-shadow:0 2px 10px rgba(0,0,0,.4);
+  }
+  .garden-hint{font-size:18px;opacity:.82;margin-top:2px;}
+  .progress{
+    margin-top:8px;font-size:17px;color:var(--gold);letter-spacing:.5px;
+    display:inline-flex;gap:6px;align-items:center;
+  }
+  .progress .dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.25);transition:background .4s,box-shadow .4s;}
+  .progress .dot.on{background:var(--gold);box-shadow:0 0 8px var(--gold);}
+
+  .field{
+    position:relative;z-index:2;
+    width:100%;max-width:520px;margin:0 auto;
+    flex:1 1 auto;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    align-content:end;
+    gap:4px 0;
+    padding-bottom:60px;
+  }
+  .ground{
+    position:absolute;left:0;right:0;bottom:0;height:120px;z-index:1;
+    background:linear-gradient(180deg,rgba(60,110,70,0) 0%,#3f7a52 30%,#2f5e40 100%);
+    border-radius:50% 50% 0 0/26px 26px 0 0;
+  }
+  body.dawn .ground{background:linear-gradient(180deg,rgba(120,180,120,0) 0%,#5aa06a 30%,#3f7a52 100%);}
+
+  .plant{
+    position:relative;z-index:2;
+    display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+    min-height:150px;
+    cursor:pointer;background:none;border:none;
+    padding:0 4px 0;
+  }
+  .plant:nth-child(odd){transform:translateY(14px);}
+  .stem{
+    width:5px;background:linear-gradient(180deg,var(--leaf),var(--leaf-dark));
+    border-radius:3px;height:18px;
+    transition:height .9s cubic-bezier(.2,.7,.3,1);
+    transform-origin:bottom;
+  }
+  .plant.bloomed .stem{height:64px;}
+  .bud,.flower-svg{width:46px;height:46px;}
+  .bud{
+    transition:opacity .35s,transform .5s;
+    filter:drop-shadow(0 3px 5px rgba(0,0,0,.3));
+    animation:sway 5s infinite ease-in-out;
+  }
+  @keyframes sway{0%,100%{transform:rotate(-4deg);}50%{transform:rotate(4deg);}}
+  .plant.bloomed .bud{opacity:0;transform:scale(.3);position:absolute;}
+  .flower-svg{
+    opacity:0;transform:scale(0) rotate(-40deg);
+    transition:opacity .6s ease .25s,transform .7s cubic-bezier(.34,1.56,.5,1) .25s;
+    filter:drop-shadow(0 4px 7px rgba(0,0,0,.28));
+  }
+  .plant.bloomed .flower-svg{opacity:1;transform:scale(1) rotate(0);}
+  .flower-svg.gentle{animation:sway 6s infinite ease-in-out .8s;}
+
+  .cat{
+    position:absolute;bottom:6px;font-size:30px;opacity:0;
+    transform:translateY(10px) scale(.4);
+    transition:opacity .6s ease .4s,transform .6s cubic-bezier(.34,1.56,.5,1) .4s;
+    z-index:0;pointer-events:none;
+  }
+  .plant.bloomed .cat{opacity:1;transform:translateY(0) scale(1);}
+  .cat.left{left:2px;}
+  .cat.right{right:2px;}
+
+  /* ---------- bloom card ---------- */
+  #cardLayer{
+    position:absolute;inset:0;z-index:20;
+    display:flex;align-items:center;justify-content:center;
+    background:rgba(15,8,35,.55);backdrop-filter:blur(3px);
+    opacity:0;pointer-events:none;transition:opacity .4s ease;padding:26px;
+  }
+  #cardLayer.show{opacity:1;pointer-events:auto;}
+  .card{
+    background:var(--card);color:var(--ink);
+    border-radius:26px;padding:34px 28px 30px;
+    max-width:360px;width:100%;
+    box-shadow:0 24px 60px rgba(0,0,0,.45);
+    transform:translateY(24px) scale(.92);transition:transform .5s cubic-bezier(.34,1.56,.5,1);
+    position:relative;
+  }
+  #cardLayer.show .card{transform:translateY(0) scale(1);}
+  .card .ribbon{font-size:34px;margin-bottom:4px;}
+  .card h2{
+    font-family:'Dancing Script',cursive;font-size:40px;font-weight:700;
+    color:#b3477a;line-height:1.05;margin-bottom:14px;
+  }
+  .card p{font-size:23px;line-height:1.42;color:var(--ink);}
+  .card-photo{
+    width:100%;height:200px;object-fit:cover;border-radius:16px;
+    margin-bottom:14px;display:block;
+    box-shadow:0 4px 16px rgba(0,0,0,.18);
+  }
+  .card .closec{
+    margin-top:24px;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:20px;
+    color:#b3477a;background:none;border:2px solid #e7b9cf;border-radius:30px;
+    padding:9px 26px;cursor:pointer;transition:background .2s;
+  }
+  .card .closec:active{background:#f6e7ee;}
+
+  /* ---------- finale ---------- */
+  #finale{z-index:8;}
+  .finale-crown{font-size:50px;margin-bottom:6px;}
+  .finale-cats{font-size:34px;letter-spacing:2px;margin:6px 0 18px;}
+  #finale h1{
+    font-family:'Dancing Script',cursive;font-size:46px;font-weight:700;
+    color:#fff;text-shadow:0 3px 16px rgba(120,60,90,.5);margin-bottom:18px;line-height:1.05;
+  }
+  .finale-msg{
+    font-size:24px;line-height:1.5;max-width:360px;color:#fff;
+    text-shadow:0 1px 8px rgba(90,50,70,.45);
+  }
+  .finale-sign{
+    font-family:'Dancing Script',cursive;font-size:34px;color:#fff;margin-top:22px;
+    text-shadow:0 2px 12px rgba(90,50,70,.5);
+  }
+  .replay{
+    margin-top:30px;background:rgba(255,255,255,.18);color:#fff;border:2px solid rgba(255,255,255,.55);
+    border-radius:30px;padding:11px 28px;font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;
+    cursor:pointer;backdrop-filter:blur(2px);
+  }
+  .replay:active{background:rgba(255,255,255,.3);}
+
+  .petal-fall{position:absolute;top:-30px;font-size:20px;pointer-events:none;z-index:9;animation:fall linear forwards;}
+  @keyframes fall{to{transform:translateY(110vh) rotate(360deg);opacity:.2;}}
+
+  @media (max-height:680px){
+    .princess-name{font-size:52px;margin-bottom:18px;}
+    .count-num{font-size:60px;}
+    .plant{min-height:128px;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none !important;}
+    .stem,.flower-svg,.bud,.cat{transition:opacity .3s ease;}
+  }
+</style>
+</head>
+<body>
+<!-- VIDEO SPLASH -->
+<div id="videoSplash">
+  <video id="splashVideo" autoplay muted playsinline loop src="carro.mp4"></video>
+  <div class="splash-text">
+    <p>Saia da estrada por um minuto<br>e entre no nosso jardim 🌸</p>
+    <button class="splash-btn" id="splashBtn">Entrar no jardim 👑</button>
+  </div>
+</div>
+
+<audio id="bgMusic" loop preload="none">
+  <source src="Alex Warren - Ordinary.mp3" type="audio/mpeg">
+</audio>
+<div id="sky"></div>
+<div class="moon"></div>
+<div class="sun"></div>
+
+<!-- INTRO -->
+<section id="intro" class="screen active">
+  <div class="crown">👑</div>
+  <div class="eyebrow">para a minha princesa</div>
+  <h1 class="princess-name">Luiza</h1>
+  <div class="count-wrap">
+    <div class="count-num" id="countNum">0</div>
+    <div class="count-label">noites em que eu orei por você</div>
+    <div class="count-sub">desde os meus 18 até hoje, aos 24</div>
+  </div>
+  <button class="btn" id="enterBtn">Entrar no nosso jardim</button>
+</section>
+
+<!-- GARDEN -->
+<section id="garden" class="screen">
+  <div class="garden-head">
+    <div class="garden-title">O jardim das minhas orações</div>
+    <div class="garden-hint">toque cada flor pra ver o que eu pedi por você</div>
+    <div class="progress" id="progress"></div>
+  </div>
+  <div class="field" id="field"></div>
+  <div class="ground"></div>
+</section>
+
+<!-- BLOOM CARD -->
+<div id="cardLayer">
+  <div class="card">
+    <img class="card-photo" id="cardPhoto" src="" alt="">
+    <div class="ribbon" id="cardRibbon">🌸</div>
+    <h2 id="cardTitle"></h2>
+    <p id="cardText"></p>
+    <button class="closec" id="cardClose">continuar no jardim</button>
+  </div>
+</div>
+
+<!-- FINALE -->
+<section id="finale" class="screen">
+  <div class="finale-crown">👑</div>
+  <h1>Luiza, minha princesa</h1>
+  <p class="finale-msg" id="finaleMsg"></p>
+  <div class="finale-cats">🐈 🐈 🐈 🐈 🐈 🐈 🐈</div>
+  <div class="finale-sign">Volta logo pra mim, minha princesa. 👑</div>
+  <button class="replay" id="replayBtn">ver de novo</button>
+</section>
+
+<script>
+/* ====== CONTEÚDO — edite à vontade ====== */
+const NOITES = 2190;            // 6 anos × 365
+const flowers = [
+  {color:"#f4a6c0", icon:"🌸", title:"Carinhosa", photo:"foto5.jpeg",
+   text:"Eu pedi alguém com quem eu pudesse ser meloso sem medo. Você me deixa ser todo seu — e ainda me enche de carinho de volta."},
+  {color:"#c3a6f4", icon:"😊", title:"Sorridente", photo:"foto8.jpeg",
+   text:"Pedi alguém que me fizesse sorrir o tempo inteiro. Do seu lado, eu simplesmente não consigo parar."},
+  {color:"#f4d28a", icon:"✨", title:"Linda", photo:"foto6.jpeg",
+   text:"Pedi… e Deus caprichou. Você é linda demais, do jeitinho que eu nem sabia sonhar."},
+  {color:"#f49a8a", icon:"😄", title:"Engraçada", photo:"foto7.jpeg",
+   text:"Pedi alguém pra rir junto. A gente sorri junto, combina, e se entende sem precisar explicar nada."},
+  {color:"#ef6f8b", icon:"💞", title:"Meu lar", photo:"foto3.jpeg",
+   text:"Pedi um lugar pra chamar de meu. Seu beijo, seu cheiro, seu toque — tudo em você é o meu lar."},
+  {color:"#8ac6f4", icon:"🌟", title:"Espontânea", photo:"foto4.jpeg",
+   text:"Pedi alguém direto como eu. A gente fala “vamos se ver” e vai. Sem joguinho, sem medo, do nosso jeito."},
+  {color:"#8fd9b6", icon:"🕊️", title:"Minha paz", photo:"foto1.jpeg",
+   text:"Pedi paz. Com você eu finalmente encontrei. Você é o meu sossego e a minha felicidade."},
+  {color:"#d98ae0", icon:"💍", title:"Mesmo sonho", photo:"foto2.jpeg",
+   text:"Pedi alguém que sonhasse o mesmo que eu: casar, ter nossa família, nossos filhos… e os nossos sete gatos te esperando em casa."}
+];
+const finaleMessage = "Por mais de 2.190 noites, antes mesmo de te conhecer, eu te pedi a Deus. Ele me ouviu — e me deu você, que é tudo o que eu pedi e muito mais.";
+/* ======================================== */
+
+const $ = s => document.querySelector(s);
+let bloomed = 0;
+
+/* video splash */
+$("#splashBtn").addEventListener("click",()=>{
+  const splash = $("#videoSplash");
+  splash.classList.add("fade-out");
+  setTimeout(()=>{ splash.style.display="none"; $("#splashVideo").pause(); },1200);
+});
+
+/* stars */
+(function(){
+  const sky = $("#sky");
+  for(let i=0;i<70;i++){
+    const s=document.createElement("div");
+    s.className="star";
+    const sz=Math.random()*2.2+1;
+    s.style.width=s.style.height=sz+"px";
+    s.style.left=Math.random()*100+"%";
+    s.style.top=Math.random()*72+"%";
+    s.style.animationDelay=(Math.random()*4)+"s";
+    sky.appendChild(s);
+  }
+})();
+
+/* count up */
+function runCount(){
+  const el=$("#countNum");const target=NOITES;const dur=1600;const t0=performance.now();
+  function step(now){
+    const p=Math.min((now-t0)/dur,1);
+    const e=1-Math.pow(1-p,3);
+    el.textContent=Math.round(target*e).toLocaleString("pt-BR");
+    if(p<1)requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+runCount();
+
+/* flower svg */
+function flowerSVG(color){
+  let petals="";
+  for(let i=0;i<8;i++){
+    const a=i*45;
+    petals+=`<ellipse cx="50" cy="26" rx="11" ry="20" fill="${color}" transform="rotate(${a} 50 50)"/>`;
+  }
+  return `<svg class="flower-svg gentle" viewBox="0 0 100 100">${petals}<circle cx="50" cy="50" r="13" fill="#ffd66b"/><circle cx="50" cy="50" r="13" fill="none" stroke="rgba(0,0,0,.06)"/></svg>`;
+}
+const budSVG = `<svg class="bud" viewBox="0 0 100 100"><path d="M50 78 Q30 70 30 50 Q42 56 50 70 Q58 56 70 50 Q70 70 50 78Z" fill="#5fa06f"/><path d="M50 70 Q44 40 50 18 Q56 40 50 70Z" fill="#8fc99a"/></svg>`;
+
+/* build progress dots */
+(function(){
+  const p=$("#progress");
+  p.innerHTML=`<span id="progText">0 de ${flowers.length} floresceram</span>`;
+})();
+function updateProgress(){
+  $("#progText").textContent = `${bloomed} de ${flowers.length} floresceram`;
+}
+
+/* build field */
+const catEmojis=["🐱","🐈","🐈‍⬛","😺","🐈","😸","🐱"];
+(function(){
+  const field=$("#field");
+  flowers.forEach((f,idx)=>{
+    const plant=document.createElement("button");
+    plant.className="plant";
+    plant.setAttribute("aria-label","Florescer: "+f.title);
+    const side = idx%2===0 ? "left" : "right";
+    const catHTML = idx>=1 ? `<span class="cat ${side}">${catEmojis[(idx-1)%catEmojis.length]}</span>` : "";
+    plant.innerHTML = catHTML + flowerSVG(f.color) + budSVG + `<div class="stem"></div>`;
+    plant.addEventListener("click",()=>bloom(plant,f),{once:false});
+    field.appendChild(plant);
+  });
+})();
+
+function bloom(plant,f){
+  if(plant.classList.contains("bloomed")){ openCard(f); return; }
+  plant.classList.add("bloomed");
+  bloomed++;
+  updateProgress();
+  setTimeout(()=>openCard(f),520);
+  if(bloomed===flowers.length){
+    setTimeout(showFinale,2600);
+  }
+}
+
+function openCard(f){
+  const photo=$("#cardPhoto");
+  if(f.photo){photo.src=f.photo;photo.style.display="block";}
+  else{photo.style.display="none";}
+  $("#cardRibbon").textContent=f.icon;
+  $("#cardTitle").textContent=f.title;
+  $("#cardText").textContent=f.text;
+  $("#cardLayer").classList.add("show");
+}
+$("#cardClose").addEventListener("click",()=>$("#cardLayer").classList.remove("show"));
+$("#cardLayer").addEventListener("click",e=>{if(e.target.id==="cardLayer")$("#cardLayer").classList.remove("show");});
+
+/* navigation */
+$("#enterBtn").addEventListener("click",()=>{
+  const music = $("#bgMusic");
+  music.volume = 0.5;
+  music.play().catch(()=>{});
+  $("#intro").classList.remove("active");
+  setTimeout(()=>$("#garden").classList.add("active"),300);
+});
+
+function showFinale(){
+  $("#finaleMsg").textContent=finaleMessage;
+  document.body.classList.add("dawn");
+  $("#garden").classList.remove("active");
+  setTimeout(()=>{
+    $("#finale").classList.add("active");
+    petalRain();
+  },600);
+}
+
+function petalRain(){
+  const petals=["🌸","🌷","💗","✨","🌼"];
+  for(let i=0;i<26;i++){
+    setTimeout(()=>{
+      const p=document.createElement("div");
+      p.className="petal-fall";
+      p.textContent=petals[i%petals.length];
+      p.style.left=Math.random()*100+"%";
+      p.style.animationDuration=(Math.random()*3+4)+"s";
+      document.body.appendChild(p);
+      setTimeout(()=>p.remove(),8000);
+    },i*180);
+  }
+}
+
+$("#replayBtn").addEventListener("click",()=>location.reload());
+</script>
+</body>
+</html>
