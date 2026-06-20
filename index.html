@@ -381,10 +381,15 @@ const $ = s => document.querySelector(s);
 let bloomed = 0;
 
 /* video splash */
+const splashVideo = $("#splashVideo");
+splashVideo.muted = true;
+splashVideo.play().catch(()=>{});
+document.addEventListener("touchstart", ()=>{ splashVideo.play().catch(()=>{}); }, {once:true});
+
 $("#splashBtn").addEventListener("click",()=>{
   const splash = $("#videoSplash");
   splash.classList.add("fade-out");
-  setTimeout(()=>{ splash.style.display="none"; $("#splashVideo").pause(); },1200);
+  setTimeout(()=>{ splash.style.display="none"; splashVideo.pause(); },1200);
 });
 
 /* stars */
